@@ -24,36 +24,20 @@ grid(int arrayI[3][3]) { /*Сетка 3х3*/
 }
 
 char
-check_win(char aC[3][3], char you) { // по горизонтале проверяет тройку
-    int bl = 1;
+check_win(char aC[3][3], char you, char he) {
+    int i = 0, j = 0;
     printf("You=%c, He=%c\n", you, he);
-    for (int i = 0; i < 3; i++) {
-        for (int j=0; j < 3;j++) {
-            while(bl && j < 3) {
-                if(aC[i][j] == you) { // c YОU работает, с HЕ не работает еще
-                    printf("You(%c) [%d][%d]=[%c]\n", you, i, j, aC[i][j]);
-                    bl = 1;
-                    if(j == 2) {
-                        printf("You(%c) [%d][%d]=[%c]\n", you, i, j, aC[i][j]);
-                        return aC[i][j];
-                    }
-                    j++;
-                } /*else if(aC[i][j] == he) {
-                    printf("He(%c) [%d][%d]=[%c]\n", he, i, j, aC[i][j]);
-                    bl = 1;
-                    j++;
-                    if(j == 2) {
-                        printf("You(%c) [%d][%d]=[%c]\n", you, i, j, aC[i][j]);
-                        return aC[i][j];
-                    }
-                }*/
-                else {
-                    // printf("a[%d][%d]=[%c]\n",i,j, aC[i][j]);
-                    i++;
-                    j = 0;
-                }
-            }
-        }
+    if (((aC[i][j] == 'X') && (aC[i][j + 1] == 'X') && (aC[i][j + 2] == 'X')) || ((aC[i][j] == 'X') && (aC[i + 1][j] == 'X') && (aC[i + 2][j] == 'X')) || ((aC[i][j] == 'X') && (aC[i + 1][j + 1] == 'X') && (aC[i + 2][j + 2] == 'X')) || ((aC[i + 2][j] == 'X') && (aC[i + 1][j + 1] == 'X') && (aC[i][j + 2] == 'X')) || ((aC[i + 1][j] == 'X') && (aC[i + 1][j + 1] == 'X') && (aC[i + 1][j + 2] == 'X')) || ((aC[i + 2][j] == 'X') && (aC[i + 2][j + 1] == 'X') && (aC[i + 2][j + 2] == 'X')) || ((aC[i][j + 1] == 'X') && (aC[i + 1][j + 1] == 'X') && (aC[i + 2][j + 1] == 'X')) || ((aC[i][j + 2] == 'X') && (aC[i + 1][j + 2] == 'X') && (aC[i + 2][j + 2] == 'X'))) {
+        printf("Победил Х!");
+        return 0;
+    }
+    else if (((aC[i][j] == 'O') && (aC[i][j + 1] == 'O') && (aC[i][j + 2] == 'O')) || ((aC[i][j] == 'O') && (aC[i + 1][j] == 'O') && (aC[i + 2][j] == 'O')) || ((aC[i][j] == 'O') && (aC[i + 1][j + 1] == 'O') && (aC[i + 2][j + 2] == 'O')) || ((aC[i + 2][j] == 'O') && (aC[i + 1][j + 1] == 'O') && (aC[i][j + 2] == 'O')) || ((aC[i + 1][j] == 'O') && (aC[i + 1][j + 1] == 'O') && (aC[i + 1][j + 2] == 'O')) || ((aC[i + 2][j] == 'O') && (aC[i + 2][j + 1] == 'O') && (aC[i + 2][j + 2] == 'O')) || ((aC[i][j + 1] == 'O') && (aC[i + 1][j + 1] == 'O') && (aC[i + 2][j + 1] == 'O')) || ((aC[i][j + 2] == 'O') && (aC[i + 1][j + 2] == 'O') && (aC[i + 2][j + 2] == 'O'))) {
+        printf("Победил О!");
+        return 0;
+    }
+    else {
+        printf("Ничья");
+        return 1;
     }
 }
 
@@ -102,7 +86,8 @@ int main(void) {
             }
         }
     }
-    printf("Выиграл = %c", check_win(matrC, you));
+    // printf("Выиграл = %c", check_win(matrC, you));
+    check_win(matrC, you, he);
     // system("pause");
     return 0;
 }
@@ -126,20 +111,4 @@ int main(void) {
 //  if(matrix[0][2]==matrix[1][1] && matrix[1][1]==matrix[2] [0])
 //  return matrix[0][2];
 //  return SPACE;
-// }
-
-// bool Win()
-// {
-//     int i = 0, j(0);
-//     if (((matrix[i][j] == 'X') && (matrix[i][j + 1] == 'X') && (matrix[i][j + 2] == 'X')) || ((matrix[i][j] == 'X') && (matrix[i + 1][j] == 'X') && (matrix[i + 2][j] == 'X')) || ((matrix[i][j] == 'X') && (matrix[i + 1][j + 1] == 'X') && (matrix[i + 2][j + 2] == 'X')) || ((matrix[i + 2][j] == 'X') && (matrix[i + 1][j + 1] == 'X') && (matrix[i][j + 2] == 'X')) || ((matrix[i + 1][j] == 'X') && (matrix[i + 1][j + 1] == 'X') && (matrix[i + 1][j + 2] == 'X')) || ((matrix[i + 2][j] == 'X') && (matrix[i + 2][j + 1] == 'X') && (matrix[i + 2][j + 2] == 'X')) || ((matrix[i][j + 1] == 'X') && (matrix[i + 1][j + 1] == 'X') && (matrix[i + 2][j + 1] == 'X')) || ((matrix[i][j + 2] == 'X') && (matrix[i + 1][j + 2] == 'X') && (matrix[i + 2][j + 2] == 'X')))
-//     {
-//     cout << "Вы победили!\n";
-//     return 0;
-//     }
-//     else if (((matrix[i][j] == 'O') && (matrix[i][j + 1] == 'O') && (matrix[i][j + 2] == 'O')) || ((matrix[i][j] == 'O') && (matrix[i + 1][j] == 'O') && (matrix[i + 2][j] == 'O')) || ((matrix[i][j] == 'O') && (matrix[i + 1][j + 1] == 'O') && (matrix[i + 2][j + 2] == 'O')) || ((matrix[i + 2][j] == 'O') && (matrix[i + 1][j + 1] == 'O') && (matrix[i][j + 2] == 'O')) || ((matrix[i + 1][j] == 'O') && (matrix[i + 1][j + 1] == 'O') && (matrix[i + 1][j + 2] == 'O')) || ((matrix[i + 2][j] == 'O') && (matrix[i + 2][j + 1] == 'O') && (matrix[i + 2][j + 2] == 'O')) || ((matrix[i][j + 1] == 'O') && (matrix[i + 1][j + 1] == 'O') && (matrix[i + 2][j + 1] == 'O')) || ((matrix[i][j + 2] == 'O') && (matrix[i + 1][j + 2] == 'O') && (matrix[i + 2][j + 2] == 'O')))
-//     {
-//         cout << "Победил компьютер!\n";
-//         return 0;
-//     }
-//     else return 1;
 // }
