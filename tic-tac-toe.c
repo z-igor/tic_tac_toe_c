@@ -1,171 +1,117 @@
-#define _CRT_SECURE_NO_WARNINGS // для возможности использования scanf
+/*
+ * Крестики-нолики v0.001
+ * матрица N x N
+ * |N| <= 30 (почему 30? потому что, Я АВТОР и делаю что хочу)
+ * собрать цепочку из трех X или O
+ * выиграл тот, кто собрал цепочку первым
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <string.h>
+//#include <ctype.h> для isdigit(number)
 
-int
-rnd_chs() {
-    char x;
+#define MAXSIZE 30 // 30^2 = 900 (3 значное число)
+
+char w = ' '; /*глобальная для выигрыша*/
+
+/*size n array(матрица[n][n], размер матрицы)*/
+void size_na(int *p, int size) {
+    int i, j, c = 1;
+    for (i = 0; i < size; i++) {
+        for (j = 0; j < size; j++) {
+            *(p+i*size + j) = c++; /*с от 1 до размера матрицы в квадрате*/
+            c < 11  ? printf("[ %d ] ", *(p + i * size + j)) :\
+            c < 101 ? printf("[%d ] ",  *(p + i * size + j)) :\
+                      printf("[%d] ",   *(p + i * size + j));
+        }
+        puts("");
+    }
+}
+/*random choose() - предназначен для случайного выбора Х/О*/
+char rnd_chs() {
+//    char x;
     srand(time(NULL));
-    return x = (rand() % 2 ? 'X' : 'O');
+    return (rand() % 2 ? 'X' : 'O');
 }
+/*проверка цепочки(  *матрица, размер, текущая строка, текущий столбец, победитель)*/
+char check_trio(int *q, int size, int i, int j, char win) {
+    if(*(q + (i-1) * size + (j-1)) == win && *(q + (i+1) * size + (j+1)) == win ||
+       *(q + (i-1) * size + (j))   == win && *(q + (i+1) * size + (j))   == win ||
+       *(q + (i)   * size + (j-1)) == win && *(q + (i)   * size + (j+1)) == win ||
+       *(q + (i-1) * size + (j+1)) == win && *(q + (i+1) * size + (j-1)) == win ||
 
-void
-grid(int arrayI[3][3]) { /*Сетка 3х3*/
-    int n = 1;
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            arrayI[i][j] = n++;
-            printf("[ %d ]", arrayI[i][j]);
-        }
-        printf("\n");
+       *(q + (i-1) * size + (j))   == win && *(q + (i-2) * size + (j))   == win ||
+       *(q + (i+1) * size + (j))   == win && *(q + (i+2) * size + (j))   == win ||
+       *(q + (i)   * size + (j+1)) == win && *(q + (i)   * size + (j+2)) == win ||
+       *(q + (i)   * size + (j-1)) == win && *(q + (i)   * size + (j-2)) == win ||
+       *(q + (i-1) * size + (j-1)) == win && *(q + (i-2) * size + (j-2)) == win ||
+       *(q + (i+1) * size + (j+1)) == win && *(q + (i+2) * size + (j+2)) == win ||
+       *(q + (i-1) * size + (j+1)) == win && *(q + (i-2) * size + (j+2)) == win ||
+       *(q + (i+1) * size + (j-1)) == win && *(q + (i+2) * size + (j-2)) == win) {
+        return win;
     }
-}
-
-char
-check_win(char aC[3][3], char you, char he) {
-    int i = 0, j = 0;
-    printf("You=%c, He=%c\n", you, he);
-    if (((aC[i][j] == 'X') && (aC[i][j + 1] == 'X') && (aC[i][j + 2] == 'X')) || ((aC[i][j] == 'X') && (aC[i + 1][j] == 'X') && (aC[i + 2][j] == 'X')) || ((aC[i][j] == 'X') && (aC[i + 1][j + 1] == 'X') && (aC[i + 2][j + 2] == 'X')) || ((aC[i + 2][j] == 'X') && (aC[i + 1][j + 1] == 'X') && (aC[i][j + 2] == 'X')) || ((aC[i + 1][j] == 'X') && (aC[i + 1][j + 1] == 'X') && (aC[i + 1][j + 2] == 'X')) || ((aC[i + 2][j] == 'X') && (aC[i + 2][j + 1] == 'X') && (aC[i + 2][j + 2] == 'X')) || ((aC[i][j + 1] == 'X') && (aC[i + 1][j + 1] == 'X') && (aC[i + 2][j + 1] == 'X')) || ((aC[i][j + 2] == 'X') && (aC[i + 1][j + 2] == 'X') && (aC[i + 2][j + 2] == 'X'))) {
-        printf("Победил Х!");
-        return 0;
-    }
-    else if (((aC[i][j] == 'O') && (aC[i][j + 1] == 'O') && (aC[i][j + 2] == 'O')) || ((aC[i][j] == 'O') && (aC[i + 1][j] == 'O') && (aC[i + 2][j] == 'O')) || ((aC[i][j] == 'O') && (aC[i + 1][j + 1] == 'O') && (aC[i + 2][j + 2] == 'O')) || ((aC[i + 2][j] == 'O') && (aC[i + 1][j + 1] == 'O') && (aC[i][j + 2] == 'O')) || ((aC[i + 1][j] == 'O') && (aC[i + 1][j + 1] == 'O') && (aC[i + 1][j + 2] == 'O')) || ((aC[i + 2][j] == 'O') && (aC[i + 2][j + 1] == 'O') && (aC[i + 2][j + 2] == 'O')) || ((aC[i][j + 1] == 'O') && (aC[i + 1][j + 1] == 'O') && (aC[i + 2][j + 1] == 'O')) || ((aC[i][j + 2] == 'O') && (aC[i + 1][j + 2] == 'O') && (aC[i + 2][j + 2] == 'O'))) {
-        printf("Победил О!");
-        return 0;
-    }
-    else {
-        printf("Ничья");
-        return 1;
-    }
-}
-
-int
-selectCell(int arrayI[3][3], char arrayC[3][3], char you, char he, int *trg) {
-    printf("Введите номер ячейки:");
-    int x = 0;
-    do {
-        x = getchar();
-    } while (x == '\n');
-    x = x - '0';
-    printf("\n");
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            if (x == arrayI[i][j]) {
-                if ( !(*trg) ) {
-                    arrayC[i][j] = you;
-                    *trg = !(*trg);
-                } else {
-                    arrayC[i][j] = he;
-                    *trg = !(*trg);
-                }
-            }
-            printf("[ %c ]", arrayC[i][j]);
-        }
-        printf("\n");
-    }
-}
-
-int main(void) {
-    // system("chcp 1251");
-    // system("clean");
-    int matrI[3][3], trg = 0;
-    char matrC[3][3], you, he, win;
-    memset(matrI, 0, sizeof(matrI));
-    memset(matrC, ' ', sizeof(matrC));
-    you = rnd_chs();
-    he = (you == 'X' ? 'O' : 'X');
-    printf("Выберите ячейку в сетке, куда хотите поставить крестик/нолик\nВы ходите [%c]\nСоперник ходит [%c]\n", you, he);
-    grid(matrI);
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            while (matrC[i][j] == ' ' /*|| (win != you || win != he) */) {
-                selectCell(matrI, matrC, you, he, &trg);
-                // win = check_win(matrC, you);
-            }
-        }
-    }
-    // printf("Выиграл = %c", check_win(matrC, you));
-    check_win(matrC, you, he);
-    // system("pause");
     return 0;
 }
 
-// char check(void) {
-//  int t;
-//  char *p;
-//  for(t=0; t<3; t++) { //строки
-//  p = &matrix[t] [0];
-//  if (*p==* (p+1) && * (p+1)==*(p+2))
-//    return *p;
-//  }
-//  for(t=0; t<3; t++) { // столбцы
-//  p = &matrix[0][t];
-//  if(*p==*(p+3) && *(p+3)==*(p+6))
-//    return *p;
-//  }
-//   диагонали
-//  if(matrix[0] [0]==matrix [1] [1] && matrix[1] [1]==matrix [2] [2] )
-//  return matrix[0][0];
-//  if(matrix[0][2]==matrix[1][1] && matrix[1][1]==matrix[2] [0])
-//  return matrix[0][2];
-//  return SPACE;
-// }
+/*input value(матрица, размер её, номер ячейки, переключатель, X/O, O/X)*/
+char inp_val(int *p, int size, int x, int *trg, char you, char he) {
+    int i, j;
+    for (i = 0; i < size; i++) {
+        for (j = 0; j < size; j++) {
+            if (*(p + i * size + j) == x) { /* *(p + i * size + j) == p[i][j] */
+                if ( !(*trg) ) { /*если trg == 1, то ставиться you, you зависит от rnd_chs()*/
+                    *(p + i * size + j) = you;
+                    if(check_trio(p, size, i, j, you)) {
+                        w = you;
+                    }
+                    *trg = !(*trg); /*меняем значение trg, дабы чередовать X/O*/
+                } else {
+                    *(p + i * size + j) = he;
+                    if(check_trio(p, size, i, j, he)) {
+                        w = he;
+                    }
+                    *trg = !(*trg);
+                }
+                printf("[ %c ] ", *(p + i * size + j)); /*выводим char элемент массива в int массиве*/
+                continue; /*прерывания второго вывода. Без неё, например, если ввести х=5 в 3х3, то будет так: [4] [X] [88] [6]*/
+            } /*проверка, если p[i][j] == X || O, то печатаем char %c, если значение < 10 или < 100, то форматируем вывод: [ 5 ] или [55 ]*/
+            (*(p + i * size + j) == 'X' || *(p + i * size + j) == 'O') ? printf("[ %c ] ", *(p + i * size + j)) :\
+             *(p + i * size + j) < 10  ? printf("[ %d ] ", *(p + i * size + j)) :\
+             *(p + i * size + j) < 100 ? printf("[%d ] ",  *(p + i * size + j)) :\
+                                         printf("[%d] ",   *(p + i * size + j));
+        } puts("");
+    }
+    return w;
+}
 
-// char
-// check_win(char aC[3][3], char you, char he) {
-//     printf("You=%c, He=%c\n", you, he);
-//     for (int i = 0; i < 3; i++) {
-//         for (int j=0; j < 3;j++) {
-//             while(j < 3) {                   
-/*.........................*/
-//                  if(aC[i][j] == you) {       /*     горизонталь 3x3     */
-//                     if(j == 2) {             /*                         */
-//                         return aC[i][j];     /* ->> [ x ][ o ][ x ]     */
-//                     }                        /* ->> [ x ][ x ][ o ]     */
-//                      j++;                    /* ->> [ x ][ o ][ o ]     */
-//                  } else {                    /*                         */
-//                      i++;                    /*                         */
-//                      j = 0;                  /*                         */
-//                  }                           /*                         */
-//             }
-//             /*-------------------------------*/
-//             while(j < 3) {                   /*                         */
-//                  if(aC[j][i] == you) {       /*     вертикаль 3x3       */
-//                     if(j == 2) {             /*                         */
-//                         return aC[j][i];     /*    [ x ][ o ][ x ]     */
-//                     }                        /*    [ x ][ x ][ o ]     */
-//                      j++;                    /*    [ x ][ o ][ o ]     */
-//                  } else {                    /*      ^    ^    ^        */
-//                      i++;                    /*      |    |    |        */
-//                      j = 0;                  /*                         */
-//                  }                           /*                         */
-//             }
-//             /*------------------------------------*/
-//             while(j < 3) {                        /*                         */
-//                  if(i == j && aC[i][j] == you) {  /*  диагональ главная 3x3  */
-//                     if(i == 2) {                  /*                         */
-//                         return aC[j][i];          /*     (x) [ o ][ x ]      */
-//                     }                             /*    [ x ] (x) [ o ]      */
-//                     j++;                          /*    [ x ][ o ] (o)       */
-//                     i++;                          /*                         */
-//                  } else {                         /*                         */
-//                      return 0;                    /*                         */
-//                  }                                /*                         */
-//             }
-//             /*------------------------------------*/
-//             while(j < 3) {                              /*                          */
-//                  if( (i+j) == 2 && aC[i][j] == you) {   /*  диагональ побочная 3x3  */
-//                     if(i == 2) {                        /*                          */
-//                         return aC[j][i];                /*    [ x ][ o ] (x)        */
-//                     }                                   /*    [ x ] (x) [ o ]       */
-//                     j++;                                /*     (x) [ o ][ o ]       */
-//                     i++;                                /*                          */
-//                  } else {                               /*                          */
-//                      return 0;                          /*                          */
-//                  }                                      /*                          */
-//             }
-//     }}
-// }
-
+int main() {
+    int size = 0,
+        x    = 0,
+        trg  = 0;
+    /*size - размер матрицы, x - значения ячейки матрицы, trg - переключатель для чередования X/O, n - просто*/
+    int a[MAXSIZE][MAXSIZE];
+    char you = rnd_chs(), he = (you == 'X' ? 'O' : 'X');
+//    CHECK:
+    /*Проверка ввода размера матрицы, размер < 31 и > 1*/
+    do {
+        printf("input size (0 < size(array) <= %d)): ", sizeof a / sizeof a[0]);
+        fflush(stdin);
+    } while(scanf("%d", &size) != 1 && printf("you need to enter number from 1 to %d:\n", sizeof a / sizeof a[0])
+            || size < 3             && printf("you need to enter > 3:\n")
+            || size > (sizeof a / sizeof a[0]) && printf("you need to enter < %d:\n", sizeof a / sizeof a[0]));
+    size_na((int *) a, size);
+    printf("First play [ %c ], ", you);
+    while(w == ' ') {
+        do { /*Проверка ввода числа ячейки, чтобы было число в заданном диапозоне, не было символом (- не могу запретить вводить одинаковые числа)*/
+            printf("enter item of grid: ");
+            fflush(stdin);
+        } while(scanf("%d", &x) != 1 && printf("you need to enter number from 1 to %d:\n", size*size)
+                || x < 1             && printf("you need to enter > 0:\n")
+                || x > (size*size)   && printf("you need to enter < %d:\n", size*size)/*
+                || inp_val((int *) a, size, x, &trg, you, he) == 0 && printf("You don't cheat\n")*/);
+        inp_val((int *) a, size, x, &trg, you, he);
+    }
+    printf("\nWin %c!!!", w);
+    return 0;
+}
