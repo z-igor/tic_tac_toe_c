@@ -1,7 +1,7 @@
 /*
- * Крестики-нолики v0.001
+ * Крестики-нолики v0.002
  * матрица N x N
- * |N| <= 30 (почему 30? потому что, Я АВТОР и делаю что хочу)
+ * |N| <= 30
  * собрать цепочку из трех X или O
  * выиграл тот, кто собрал цепочку первым
 */
@@ -11,7 +11,7 @@
 #include <time.h>
 //#include <ctype.h> для isdigit(number)
 
-#define MAXSIZE 30 // 30^2 = 900 (3 значное число)
+#define MAXSIZE 30 // 30^2 = 900
 
 char w = ' '; /*глобальная для выигрыша*/
 
@@ -36,19 +36,25 @@ char rnd_chs() {
 }
 /*проверка цепочки(  *матрица, размер, текущая строка, текущий столбец, победитель)*/
 char check_trio(int *q, int size, int i, int j, char win) {
-    if(*(q + (i-1) * size + (j-1)) == win && *(q + (i+1) * size + (j+1)) == win ||
-       *(q + (i-1) * size + (j))   == win && *(q + (i+1) * size + (j))   == win ||
-       *(q + (i)   * size + (j-1)) == win && *(q + (i)   * size + (j+1)) == win ||
-       *(q + (i-1) * size + (j+1)) == win && *(q + (i+1) * size + (j-1)) == win ||
+    if(((i+1) > (size - 1) && (j+1) > (size - 1)) ||
+       ((i-1) < 0          && (j-1) < 0)          ||
+       ((i+2) > (size - 1) && (j+2) > (size - 1)) ||
+       ((i-2) < 0          && (j-2) < 0)) {
+        return 0;
+    }else
+    if(*(q + (i+1) * size + (j+1)) == win && *(q + (i-1) * size + (j-1)) == win || /* \ */
+       *(q + (i-1) * size + (j))   == win && *(q + (i+1) * size + (j))   == win || /* ↕ */
+       *(q + (i)   * size + (j-1)) == win && *(q + (i)   * size + (j+1)) == win || /* ↔ */
+       *(q + (i+1) * size + (j-1)) == win && *(q + (i-1) * size + (j+1)) == win || /* / */
 
-       *(q + (i-1) * size + (j))   == win && *(q + (i-2) * size + (j))   == win ||
-       *(q + (i+1) * size + (j))   == win && *(q + (i+2) * size + (j))   == win ||
-       *(q + (i)   * size + (j+1)) == win && *(q + (i)   * size + (j+2)) == win ||
-       *(q + (i)   * size + (j-1)) == win && *(q + (i)   * size + (j-2)) == win ||
-       *(q + (i-1) * size + (j-1)) == win && *(q + (i-2) * size + (j-2)) == win ||
-       *(q + (i+1) * size + (j+1)) == win && *(q + (i+2) * size + (j+2)) == win ||
-       *(q + (i-1) * size + (j+1)) == win && *(q + (i-2) * size + (j+2)) == win ||
-       *(q + (i+1) * size + (j-1)) == win && *(q + (i+2) * size + (j-2)) == win) {
+       *(q + (i-1) * size + (j))   == win && *(q + (i-2) * size + (j))   == win || /* ↑ */
+       *(q + (i+1) * size + (j))   == win && *(q + (i+2) * size + (j))   == win || /* ↓ */
+       *(q + (i)   * size + (j+2)) == win && *(q + (i)   * size + (j+1)) == win || /* → */
+       *(q + (i)   * size + (j-1)) == win && *(q + (i)   * size + (j-2)) == win || /* ← */
+       *(q + (i-2) * size + (j-2)) == win && *(q + (i-1) * size + (j-1)) == win || /* °\ */
+       *(q + (i+1) * size + (j+1)) == win && *(q + (i+2) * size + (j+2)) == win || /* \. */
+       *(q + (i-2) * size + (j+2)) == win && *(q + (i-1) * size + (j+1)) == win || /* /° */
+       *(q + (i+1) * size + (j-1)) == win && *(q + (i+2) * size + (j-2)) == win)   /* ./ */ {
         return win;
     }
     return 0;
@@ -77,9 +83,9 @@ char inp_val(int *p, int size, int x, int *trg, char you, char he) {
                 continue; /*прерывания второго вывода. Без неё, например, если ввести х=5 в 3х3, то будет так: [4] [X] [88] [6]*/
             } /*проверка, если p[i][j] == X || O, то печатаем char %c, если значение < 10 или < 100, то форматируем вывод: [ 5 ] или [55 ]*/
             (*(p + i * size + j) == 'X' || *(p + i * size + j) == 'O') ? printf("[ %c ] ", *(p + i * size + j)) :\
-             *(p + i * size + j) < 10  ? printf("[ %d ] ", *(p + i * size + j)) :\
-             *(p + i * size + j) < 100 ? printf("[%d ] ",  *(p + i * size + j)) :\
-                                         printf("[%d] ",   *(p + i * size + j));
+             *(p + i * size + j)  <  10  ? printf("[ %d ] ", *(p + i * size + j)) :\
+             *(p + i * size + j)  <  100 ? printf("[%d ] ",  *(p + i * size + j)) :\
+                                           printf("[%d] ",   *(p + i * size + j));
         } puts("");
     }
     return w;
@@ -88,6 +94,7 @@ char inp_val(int *p, int size, int x, int *trg, char you, char he) {
 int main() {
     int size = 0,
         x    = 0,
+        n    = 0,
         trg  = 0;
     /*size - размер матрицы, x - значения ячейки матрицы, trg - переключатель для чередования X/O, n - просто*/
     int a[MAXSIZE][MAXSIZE];
@@ -95,14 +102,15 @@ int main() {
 //    CHECK:
     /*Проверка ввода размера матрицы, размер < 31 и > 1*/
     do {
-        printf("input size (0 < size(array) <= %d)): ", sizeof a / sizeof a[0]);
-        fflush(stdin);
+        printf("enter size (0 < size(array) <= %d)): ", sizeof a / sizeof a[0]);
+        fflush(stdin); /*вызывает очистку буферов после каждой операции записи*/
     } while(scanf("%d", &size) != 1 && printf("you need to enter number from 1 to %d:\n", sizeof a / sizeof a[0])
             || size < 3             && printf("you need to enter > 3:\n")
             || size > (sizeof a / sizeof a[0]) && printf("you need to enter < %d:\n", sizeof a / sizeof a[0]));
     size_na((int *) a, size);
     printf("First play [ %c ], ", you);
-    while(w == ' ') {
+    n = size*size;
+    while(w == ' ' && n) {
         do { /*Проверка ввода числа ячейки, чтобы было число в заданном диапозоне, не было символом (- не могу запретить вводить одинаковые числа)*/
             printf("enter item of grid: ");
             fflush(stdin);
@@ -111,7 +119,11 @@ int main() {
                 || x > (size*size)   && printf("you need to enter < %d:\n", size*size)/*
                 || inp_val((int *) a, size, x, &trg, you, he) == 0 && printf("You don't cheat\n")*/);
         inp_val((int *) a, size, x, &trg, you, he);
+        if(w == ' ') {
+            printf("next playing = %c\n", trg ? he : you);
+        }
+        n--;
     }
-    printf("\nWin %c!!!", w);
+    printf("\nWon %c!!!", w);
     return 0;
 }
