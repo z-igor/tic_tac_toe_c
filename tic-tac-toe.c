@@ -1,7 +1,7 @@
 /*
- * Крестики-нолики v0.001
+ * Крестики-нолики v0.004
  * матрица N x N
- * |N| <= 30
+ * |N| <= 200
  * собрать цепочку из трех X или O
  * выиграл тот, кто собрал цепочку первым
 **/
@@ -9,15 +9,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <mem.h>
 
-#define MAXSIZE 30 // 30^2 = 900
-#define DEFGRIDSIZE 3
+#define MAXSIZE 200
+#define DEFLTSIZE 3
 
 char w = ' '; /*глобальная для выигрыша*/
 
-/*size n array(матрица[n][n], размер матрицы)*/
-void size_na(int *p, int size) {
+/*n size array(матрица[n][n], размер матрицы)*/
+void
+n_size_a(int *p, int size) {
     int i, j, c = 1;
     for (i = 0; i < size; i++) {
         for (j = 0; j < size; j++) {
@@ -29,14 +29,17 @@ void size_na(int *p, int size) {
         puts("");
     }
 }
+
 /*random choose() - предназначен для случайного выбора Х/О*/
-char rnd_chs() {
-//    char x;
+char
+rnd_chs() {
     srand((unsigned int) time(NULL));
     return (rand() % 2 ? 'X' : 'O');
 }
-/*проверка цепочки(*матрица, размер, текущая строка, текущий столбец, победитель)*/
-char check_trio(int *q, int size, int i, int j, char win) {
+
+/*проверка цепочки(матрица, размер её, текущая строка, текущий столбец, победитель)*/
+char
+check_trio(int *q, int size, int i, int j, char win) {
     if((i+1) < size && (j+1) < size && *(q + (i+1) * size + (j+1)) == win && (i-1) >= 0 && (j-1) >= 0   && *(q + (i-1) * size + (j-1)) == win || /* \ */
        (i-1) >= 0   && *(q + (i-1) * size + (j)) == win && (i+1) < size && *(q + (i+1) * size + (j))   == win || /* ↕ */
        (j-1) >= 0   && *(q + (i) * size + (j-1)) == win && (j+1) < size && *(q + (i)   * size + (j+1)) == win || /* ↔ */
@@ -44,8 +47,8 @@ char check_trio(int *q, int size, int i, int j, char win) {
 
        (i-1) >= 0   && *(q + (i-1) * size + (j))   == win && (i-2)  >= 0   && *(q + (i-2) * size + (j))   == win || /* ↑ */
        (i+1) < size && *(q + (i+1) * size + (j))   == win && (i+2)  < size && *(q + (i+2) * size + (j))   == win || /* ↓ */
-       (j+1) < size && *(q + (i) *   size + (j+1)) == win && (j+2)  < size && *(q + (i)   * size + (j+2)) == win || /* → */
-       (j-1) >= 0   && *(q + (i) *   size + (j-1)) == win && (j-2)  >= 0   && *(q + (i)   * size + (j-2)) == win || /* ← */
+       (j+1) < size && *(q + (i)   * size + (j+1)) == win && (j+2)  < size && *(q + (i)   * size + (j+2)) == win || /* → */
+       (j-1) >= 0   && *(q + (i)   * size + (j-1)) == win && (j-2)  >= 0   && *(q + (i)   * size + (j-2)) == win || /* ← */
        (i-2) >= 0   && (j-2) >= 0   && *(q + (i-2) * size +  (j-2)) == win && (i-1) >= 0   && (j-1) >= 0 && *(q + (i-1) * size + (j-1))   == win || /* °\ */
        (i+1) < size && (j+1) < size && *(q + (i+1) * size +  (j+1)) == win && (i+2) < size && (j+2) < size && *(q + (i+2) * size + (j+2)) == win || /* \. */
        (i-2) >= 0   && (j+2) < size && *(q + (i-2) * size +  (j+2)) == win && (i-1) >= 0   && (j+1) < size && *(q + (i-1) * size + (j+1)) == win || /* /° */
@@ -56,7 +59,8 @@ char check_trio(int *q, int size, int i, int j, char win) {
 }
 
 /*input value(матрица, размер её, номер ячейки, переключатель, X/O, O/X)*/
-char inp_val(int *p, int size, int x, int *trg, char you, char he) {
+char
+inp_val(int *p, int size,  int x, int *trg, char you, char he) {
     int i, j;
     for (i = 0; i < size; i++) {
         for (j = 0; j < size; j++) {
@@ -77,35 +81,51 @@ char inp_val(int *p, int size, int x, int *trg, char you, char he) {
                 printf("[ %c ] ", *(p + i * size + j)); /*выводим char элемент массива в int массиве*/
                 continue; /*прерывания второго вывода. Без неё, например, если ввести х=5 в 3х3, то будет так: [4] [X] [88] [6]*/
             } /*проверка, если p[i][j] == X || O, то печатаем char %c, если значение < 10 или < 100, то форматируем вывод: [ 5 ] или [55 ]*/
-            (*(p + i * size + j) == 'X' || *(p + i * size + j) == 'O') ? printf("[ %c ] ", *(p + i * size + j)) :\
-             *(p + i * size + j)  <  10  ? printf("[ %d ] ", *(p + i * size + j)) :\
-             *(p + i * size + j)  <  100 ? printf("[%d ] ",  *(p + i * size + j)) :\
+            (*(p + i * size + j) == 'X' || *(p + i * size + j) == 'O') ? printf("[ %c ] ", *(p + i * size + j)) :
+             *(p + i * size + j)  <  10  ? printf("[ %d ] ", *(p + i * size + j)) :
+             *(p + i * size + j)  <  100 ? printf("[%d ] ",  *(p + i * size + j)) :
                                            printf("[%d] ",   *(p + i * size + j));
         } puts("");
     }
     return w;
 }
 
-int main() {
+/*Проверка: пустые ли ячейки для ничьи*/
+int
+check_empty(int *p, int size, int *n) {
+    int i, j;
+    for (i = 0; i < size; i++) {
+        for (j = 0; j < size; j++) {
+            if(*(p + i * size + j) == 'X' || *(p + i * size + j) == 'O') {
+                (*n)++;
+            } else {
+                *n = 0;
+            }
+        }
+    }
+    return *n;
+}
+
+int
+main() {
     int size_grid         = 0,
         input_number_grid = 0,
-        n                 = 0,
-        trg_value         = 0;
-    /*n - просто*/
-    int grid[MAXSIZE][MAXSIZE];
+        adraw             = 0, /*a draw - ничья*/
+        trg_value         = 0,
+        grid[MAXSIZE][MAXSIZE];
 //    memset(grid, 0,  sizeof(grid));
-    char you = rnd_chs(), he = (you == 'X' ? 'O' : 'X');
-    /*Проверка ввода размера матрицы, размер < 31 и > 1*/
+    char you = rnd_chs(),
+         he = (you == 'X' ? 'O' : 'X');
+    /*Проверка ввода размера матрицы, размер < 100 и > 2*/
     do {
         printf("enter size (2 < size(grid) <= %d)): ", sizeof(grid) / sizeof(grid[0]));
         fflush(stdin); /*вызывает очистку буферов после каждой операции записи*/
     } while(scanf("%d", &size_grid) != 1 && printf("you need to enter number from 1 to %d:\n", sizeof(grid) / sizeof(grid[0]))
-            || size_grid < DEFGRIDSIZE   && printf("you need to enter > 2:\n")
+            || size_grid < DEFLTSIZE     && printf("you need to enter > 2:\n")
             || size_grid > (sizeof(grid) / sizeof(grid[0])) && printf("you need to enter < %d:\n", sizeof(grid) / sizeof grid[0]));
-    n = size_grid*size_grid;
-    size_na((int *) grid, size_grid);
+    n_size_a((int *) grid, size_grid);
     printf("First play [ %c ], ", you);
-    while(w == ' ') {
+    while(w == ' '/* && n*/) {
         do { /*Проверка ввода числа ячейки, чтобы было число в заданном диапозоне, не было символом (- не могу запретить вводить одинаковые числа)*/
             printf("enter item of grid: ");
             fflush(stdin); /*вызывает очистку буферов после каждой операции записи*/
@@ -113,15 +133,16 @@ int main() {
                 || input_number_grid < 1             && printf("you need to enter > 0:\n")
                 || input_number_grid > (size_grid*size_grid) && printf("you need to enter < %d:\n", size_grid*size_grid));
         inp_val((int *) grid, size_grid, input_number_grid, &trg_value, you, he);
-        if(w == ' ') {
-            printf("next playing = %c\n", trg_value ? he : you);
-        }
-        n--;
-        if(!n) {
-            puts("No one won! Draw"); // draw - ничья
+
+        if(check_empty((int *) grid, size_grid, &adraw) != size_grid*size_grid) {
+            printf("next playing [ %c ]\n", trg_value ? he : you);
+            adraw = 0;
+        } else {
+            puts("No one won! Draw");
             return 0;
         }
     }
     printf("\nWon %c!!!", w);
+//     system("pause");
     return 0;
 }
