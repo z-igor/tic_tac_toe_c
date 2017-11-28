@@ -126,7 +126,7 @@ main() {
     n_size_a((int *) grid, size_grid);
     printf("First play [ %c ], ", you);
     while(w == ' '/* && n*/) {
-        do { /*Проверка ввода числа ячейки, чтобы было число в заданном диапозоне, не было символом (- не могу запретить вводить одинаковые числа)*/
+        do { /*Проверка ввода числа ячейки, чтобы было число в заданном диапозоне, не было символов*/
             printf("enter item of grid: ");
             fflush(stdin); /*вызывает очистку буферов после каждой операции записи*/
         } while(scanf("%d", &input_number_grid) != 1 && printf("you need to enter number from 1 to %d:\n", size_grid*size_grid)
