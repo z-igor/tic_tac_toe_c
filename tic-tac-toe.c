@@ -22,10 +22,10 @@ void n_size_a(int *p, int size) {
       for (j = 0; j < size; j++) {
          *(p + i * size + j) = c++; /* 'с' от 1 до размера матрицы в квадрате */
          c < 11    ? printf("[  %d  ] ", *(p + i * size + j)) :\
-			c < 101   ? printf("[ %d  ] ",  *(p + i * size + j)) :\
+         c < 101   ? printf("[ %d  ] ",  *(p + i * size + j)) :\
          c < 1001  ? printf("[ %d ] ",   *(p + i * size + j)) :\
          c < 10001 ? printf("[%d ] ",    *(p + i * size + j)) :\
-					      printf("[%d] ",     *(p + i * size + j));
+		     printf("[%d] ",     *(p + i * size + j));
       }
       puts("");
    }
